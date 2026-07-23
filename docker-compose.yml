@@ -1,0 +1,75 @@
+version: '3.8'
+
+services:
+  # Python API Server for Telegram Bot
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    container_name: ingenious-api
+    ports:
+      - "127.0.0.1:5000:5000"
+    environment:
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - ADMIN_IDS=${ADMIN_IDS}
+      - MANAGER_IDS=${MANAGER_IDS}
+      - API_KEY=${API_KEY}
+    volumes:
+      - ./telegram_bot:/app
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    networks:
+      - ingenious-network
+
+  # Telegram Bot Polling Service
+  bot:
+    build:
+      context: .
+      dockerfile: Dockerfile.bot
+    container_name: ingenious-bot
+    environment:
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - ADMIN_IDS=${ADMIN_IDS}
+      - MANAGER_IDS=${MANAGER_IDS}
+      - API_KEY=${API_KEY}
+    volumes:
+      - ./telegram_bot:/app
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy
+    networks:
+      - ingenious-network
+
+  # React Frontend with Nginx
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:5000}
+        VITE_API_KEY: ${API_KEY}
+    container_name: ingenious-web
+    ports:
+      - "127.0.0.1:3000:80"
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    networks:
+      - ingenious-network
+
+networks:
+  ingenious-network:
+    driver: bridge
