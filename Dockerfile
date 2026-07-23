@@ -5,7 +5,6 @@ WORKDIR /app
 
 # Build arguments for Vite environment variables
 ARG VITE_API_URL
-ARG VITE_API_KEY
 
 # Копируем package.json и package-lock.json
 COPY package*.json ./
@@ -17,7 +16,7 @@ RUN npm ci
 COPY . .
 
 # Собираем приложение с переменными окружения
-RUN VITE_API_URL=${VITE_API_URL} VITE_API_KEY=${VITE_API_KEY} npm run build
+RUN VITE_API_URL=${VITE_API_URL} npm run build
 
 # Stage 2: Production
 FROM nginx:alpine

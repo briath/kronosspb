@@ -18,7 +18,6 @@ const Contacts: React.FC<ContactsProps> = ({ darkMode }) => {
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
 
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-  const API_KEY = import.meta.env.VITE_API_KEY || '';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,8 +35,7 @@ const Contacts: React.FC<ContactsProps> = ({ darkMode }) => {
       const response = await fetch(`${API_URL}/api/inquiry`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'X-API-Key': API_KEY
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           name: formState.name.trim(),

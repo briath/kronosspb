@@ -13,7 +13,6 @@ services:
       - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
       - ADMIN_IDS=${ADMIN_IDS}
       - MANAGER_IDS=${MANAGER_IDS}
-      - API_KEY=${API_KEY}
     volumes:
       - ./telegram_bot:/app
     restart: unless-stopped
@@ -36,7 +35,6 @@ services:
       - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
       - ADMIN_IDS=${ADMIN_IDS}
       - MANAGER_IDS=${MANAGER_IDS}
-      - API_KEY=${API_KEY}
     volumes:
       - ./telegram_bot:/app
     restart: unless-stopped
@@ -53,7 +51,6 @@ services:
       dockerfile: Dockerfile
       args:
         VITE_API_URL: ${VITE_API_URL:-http://localhost:5000}
-        VITE_API_KEY: ${API_KEY}
     container_name: ingenious-web
     ports:
       - "127.0.0.1:3000:80"
